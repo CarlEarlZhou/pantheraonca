@@ -40,15 +40,15 @@ export default class TextArea extends Vue {
             return
         }
         this.cursor_top = this.text_list.cur_line * this.line_height
-        let cur_row_pre = (<Element[]>this.$refs.row)[this.text_list.cur_line].firstChild
+        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cur_line].firstChild
         if (cur_row_pre != null) {
             let tem_pos = cur_row_pre.childNodes[this.text_row_block_list[this.text_list.cur_line].cur_position]
             if (tem_pos === undefined) {
                 tem_pos = cur_row_pre.childNodes[this.text_row_block_list[this.text_list.cur_line].cur_position - 1]
-                this.cursor_left = tem_pos.offsetLeft + 7.58
+                this.cursor_left = (<HTMLElement>tem_pos).offsetLeft + 7.58
             }
             else {
-                this.cursor_left = tem_pos.offsetLeft
+                this.cursor_left = (<HTMLElement>tem_pos).offsetLeft
             }
         }
     }
