@@ -1,14 +1,14 @@
 import Vue from "vue";
-import HelloComponent from "./components/Hello.vue";
+import TextWindow from "./components/TextWindow.vue";
 
 let v = new Vue({
     el: "#app",
     template: `
-    <div>
-        <hello-component/>
+    <div style="width: 100%; height: 100%;">
+        <text-window/>
     </div>
     `,
     components: {
-        HelloComponent,
+        TextWindow,
     }
 })
