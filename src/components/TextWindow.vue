@@ -1,6 +1,6 @@
 <template>
   <div class="text-window">
-      <text-area :raw_str="'23333'"></text-area>
+      <text-area :raw_str="'\t  233  33\nasdfaso'"></text-area>
   </div>
 </template>
 
