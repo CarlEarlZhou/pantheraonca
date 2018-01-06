@@ -91,11 +91,13 @@ export default class TextArea extends Vue {
 }
 
 .row-number {
-    padding-left: 20px;
-    padding-right: 20px;
+    width: 60px;
     color: rgba(255, 255, 255, 0.5);
     background-color: #222;
+    cursor: default;
     float: left;
+    text-align: right;
+    padding-right: 25px;
 }
 
 pre {
