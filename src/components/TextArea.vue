@@ -42,24 +42,35 @@ export default class TextArea extends Vue {
         else if (event.key === 'ArrowRight') {
             this.text_list.cursorRight()
         }
+        // Enter
+        else if (event.keyCode === 13) {
+            this.text_list.newLine()
+        }
         else {
             return
         }
-        this.updateCursorPosition()
+        setTimeout(this.updateCursorPosition, 1)
     }
 
     updateCursorPosition() {
         // get cur row's pre tag
-        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cursor_position[0]]
+        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cursor_position[0]]        
         if (cur_row_pre !== null) {
             // get cur position's tt tag
             // maybe undefined because the cursor could be at the end of the line
+            // or this row doesn't have any tt at all...
             let tem_pos = cur_row_pre.childNodes[this.text_list.cursor_position[1]]
             if (tem_pos === undefined) {
-                // if undifined, get the last tt tag at the row and plus 7.58
+                // if this row doesn't have any text
+                if (this.text_list.cursor_position[1] === 0) {
+                    this.cursor_left = (<HTMLElement>cur_row_pre).offsetLeft
+                }
+                // if at the end of the row, get the last tt tag at the row and plus 7.58
                 // which is the approximate width of a tt tag
-                tem_pos = cur_row_pre.childNodes[this.text_list.cursor_position[1] - 1]
-                this.cursor_left = (<HTMLElement>tem_pos).offsetLeft + 7.58
+                else {
+                    tem_pos = cur_row_pre.childNodes[this.text_list.cursor_position[1] - 1]
+                    this.cursor_left = (<HTMLElement>tem_pos).offsetLeft + 7.58
+                }
             }
             else {
                 this.cursor_left = (<HTMLElement>tem_pos).offsetLeft

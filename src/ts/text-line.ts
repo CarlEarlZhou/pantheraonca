@@ -72,6 +72,14 @@ export default class TextList {
             this._cur_position = this._cur_position + 1
         }
     }
+
+    public newLine(): void {
+        // cut current line into two parts
+        this._text_list_before.push(this._text_list_after[0].substring(0, this._cur_position))
+        this._text_list_after[0] = this._text_list_after[0].substring(this._cur_position)
+        // reset cursor position
+        this._cur_position = 0
+    }
     
     /**
      * [y, x]
