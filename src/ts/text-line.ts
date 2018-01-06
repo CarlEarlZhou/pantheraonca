@@ -23,6 +23,7 @@ export default class TextList {
     }
 
     public handleKey(event: KeyboardEvent) {
+        event.preventDefault()
         if (event.key === 'ArrowDown') {
             this.cursorDown()
         }
@@ -39,12 +40,41 @@ export default class TextList {
         else if (event.keyCode === 13) {
             this.newLine()
         }
-        // handle number and letter for now
+        // handle number and letter
         else if (event.keyCode >= 48 && event.keyCode <= 90) {
-            this.insert(event)
+            let shift_map = [41, 33, 64, 35, 36, 37, 94, 38, 42, 40]
+            let char: string
+            if (event.keyCode >= 65 && event.keyCode <= 90) {
+                if (event.shiftKey) {
+                    char = String.fromCharCode(event.keyCode)
+                }
+                else {
+                    char = String.fromCharCode(event.keyCode).toLowerCase()
+                }
+            }
+            else {
+                if (event.shiftKey) {
+                    char = String.fromCharCode(shift_map[event.keyCode - 48])
+                }
+                else {
+                    char = String.fromCharCode(event.keyCode)
+                }
+            }
+            this.insert(char)
         }
         else if (event.keyCode === 8) {
             this.backspace()
+        }
+        else if (event.keyCode === 46) {
+            // if not the last row and at the end of the row 
+            if (this._text_list_after.length === 1 && this._cur_position === this._text_list_after[0].length) {
+                return
+            }
+            this.cursorRight()
+            this.backspace()
+        }
+        else if (event.keyCode === 32) {
+            this.insert(' ')
         }
         else {
             return
@@ -67,6 +97,13 @@ export default class TextList {
         }
     }
 
+    private insert(char: string) {
+        this._text_list_after[0] = 
+            this._text_list_after[0].substring(0, this._cur_position) + 
+            char + this._text_list_after[0].substring(this._cur_position)
+        this._cur_position = this._cur_position + 1
+    }
+
     private cursorDown(): void {
         // if not the last line
         if (this._text_list_after.length > 1) {
@@ -76,31 +113,6 @@ export default class TextList {
                 this._cur_position = this._text_list_after[0].length
             }
         }
-    }
-
-    private insert(event: KeyboardEvent) {
-        let shift_map = [41, 33, 64, 35, 36, 37, 94, 38, 42, 40]
-        let char: string
-        if (event.keyCode >= 65 && event.keyCode <= 90) {
-            if (event.shiftKey) {
-                char = String.fromCharCode(event.keyCode)
-            }
-            else {
-                char = String.fromCharCode(event.keyCode).toLowerCase()
-            }
-        }
-        else {
-            if (event.shiftKey) {
-                char = String.fromCharCode(shift_map[event.keyCode - 48])
-            }
-            else {
-                char = String.fromCharCode(event.keyCode)
-            }
-        }
-        this._text_list_after[0] = 
-            this._text_list_after[0].substring(0, this._cur_position) + 
-            char + this._text_list_after[0].substring(this._cur_position)
-        this._cur_position = this._cur_position + 1
     }
 
     private cursorUp(): void {

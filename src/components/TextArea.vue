@@ -104,7 +104,8 @@ pre {
 .text-area {
     background-color: #222;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    padding-bottom: 90vh;
     cursor: text;
 }
 
