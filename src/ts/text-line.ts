@@ -5,7 +5,6 @@ export default class TextList {
     private _text_list: string[]
     private _text_list_before: string[]
     private _text_list_after: string[]
-    private _cur_line: number
     private _cur_position: number
 
     constructor(raw_str: string, tab_len=4) {
@@ -40,8 +39,31 @@ export default class TextList {
         else if (event.keyCode === 13) {
             this.newLine()
         }
+        // handle number and letter for now
+        else if (event.keyCode >= 48 && event.keyCode <= 90) {
+            this.insert(event)
+        }
+        else if (event.keyCode === 8) {
+            this.backspace()
+        }
         else {
             return
+        }
+    }
+
+    private backspace() {
+        // if at top of the line
+        if (this._cur_position === 0) {
+            // if not the first line
+            if (this._text_list_before.length !== 0) {
+                this._cur_position = this._text_list_before[this._text_list_before.length - 1].length
+                this._text_list_after[0] = this._text_list_before.pop() + this._text_list_after[0]
+            }
+        }
+        else {
+            let tem_str = this._text_list_after[0]
+            this._text_list_after[0] = tem_str.substring(0, this._cur_position - 1) + tem_str.substring(this._cur_position)
+            this._cur_position = this._cur_position - 1
         }
     }
 
@@ -54,6 +76,31 @@ export default class TextList {
                 this._cur_position = this._text_list_after[0].length
             }
         }
+    }
+
+    private insert(event: KeyboardEvent) {
+        let shift_map = [41, 33, 64, 35, 36, 37, 94, 38, 42, 40]
+        let char: string
+        if (event.keyCode >= 65 && event.keyCode <= 90) {
+            if (event.shiftKey) {
+                char = String.fromCharCode(event.keyCode)
+            }
+            else {
+                char = String.fromCharCode(event.keyCode).toLowerCase()
+            }
+        }
+        else {
+            if (event.shiftKey) {
+                char = String.fromCharCode(shift_map[event.keyCode - 48])
+            }
+            else {
+                char = String.fromCharCode(event.keyCode)
+            }
+        }
+        this._text_list_after[0] = 
+            this._text_list_after[0].substring(0, this._cur_position) + 
+            char + this._text_list_after[0].substring(this._cur_position)
+        this._cur_position = this._cur_position + 1
     }
 
     private cursorUp(): void {
