@@ -18,10 +18,16 @@ export default class TextArea extends Vue {
     raw_str: string
     text_list = new TextList(this.raw_str, 4)
     cursor_opacity = 1
+    cursor_control: undefined|number = undefined
     cursor_top = 0
     cursor_left = 0
 
     moveCursor(event: KeyboardEvent) {
+        this.cursor_opacity = 1
+        if (this.cursor_control !== undefined) {
+            clearInterval(this.cursor_control)
+            this.cursor_control = undefined
+        }
         if (event.key === 'ArrowDown') {
             this.text_list.cursorDown()
         }
@@ -54,13 +60,17 @@ export default class TextArea extends Vue {
             }
             this.cursor_top = (<HTMLElement>tem_pos).offsetTop
         }
-        
     }
 
     mounted() {
-        setInterval(() => this.cursor_opacity = this.cursor_opacity ^ 1, 500)
+        this.cursor_control = setInterval(() => this.cursor_opacity = this.cursor_opacity ^ 1, 500)
         // listen keyevent
         document.onkeydown = this.moveCursor
+        document.onkeyup = () => {
+            if (this.cursor_control === undefined) {
+                this.cursor_control = setInterval(() => this.cursor_opacity = this.cursor_opacity ^ 1, 500)
+            }
+        }
     }
 }
 </script>
