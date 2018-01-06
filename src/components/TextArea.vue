@@ -2,8 +2,9 @@
 <div class="text-area">
     <div class="cursor" :style="{opacity: cursor_opacity, top: cursor_top + 'px', left: cursor_left + 'px'}"></div>
     <div class="text-row" :class="{'row-active': index == text_list.cursor_position[0]}" 
-    v-for="(text_row, index) in text_list.text_rows" :key="index" ref="row">
-    <pre><tt v-for="(char, i) in text_row" :key="i">{{char}}</tt></pre>
+    v-for="(text_row, index) in text_list.text_rows" :key="index">
+        <div class="row-number">{{index + 1}}</div>
+        <pre class="row-code" ref="row"><tt v-for="(char, i) in text_row" :key="i">{{char}}</tt></pre>
     </div>
 </div>
 </template>
@@ -44,8 +45,12 @@ export default class TextArea extends Vue {
         else {
             return
         }
+        this.updateCursorPosition()
+    }
+
+    updateCursorPosition() {
         // get cur row's pre tag
-        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cursor_position[0]].firstChild
+        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cursor_position[0]]
         if (cur_row_pre !== null) {
             // get cur position's tt tag
             // maybe undefined because the cursor could be at the end of the line
@@ -65,6 +70,7 @@ export default class TextArea extends Vue {
 
     mounted() {
         this.cursor_control = setInterval(() => this.cursor_opacity = this.cursor_opacity ^ 1, 500)
+        this.updateCursorPosition()
         // listen keyevent
         document.onkeydown = this.moveCursor
         document.onkeyup = () => {
@@ -84,8 +90,18 @@ export default class TextArea extends Vue {
     position: absolute;
 }
 
+.row-number {
+    padding-left: 20px;
+    padding-right: 20px;
+    color: rgba(255, 255, 255, 0.5);
+    background-color: #222;
+    float: left;
+}
+
 pre {
     color: #efefef;
+    float: left;
+    margin-bottom: 0;
     font-family: 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback';
 }
 
