@@ -2,26 +2,24 @@
 <div class="text-area">
     <div class="cursor" :style="{opacity: cursor_opacity, top: cursor_top + 'px', left: cursor_left + 'px'}"></div>
     <div class="text-row" :class="{'row-active': index == text_list.cur_line}" 
-    v-for="(text_row, index) in text_row_block_list" :key="index" ref="row">
-    <pre><tt v-for="(char, i) in text_row.row_str" :key="i" ref="col">{{char}}</tt></pre>
+    v-for="(text_row, index) in text_list.text_rows" :key="index" ref="row">
+    <pre><tt v-for="(char, i) in text_row.row_str" :key="i">{{char}}</tt></pre>
     </div>
 </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator"
-import { TextList, TextRow } from "../ts/text-line"
+import TextList from "../ts/text-line"
 
 @Component
 export default class TextArea extends Vue {
     @Prop()
     raw_str: string
     text_list = new TextList(this.raw_str, 4)
-    text_row_block_list = this.text_list.text_rows
     cursor_opacity = 1
     cursor_top = 0
     cursor_left = 0
-    line_height = 18
 
     moveCursor(event: KeyboardEvent) {
         if (event.key === 'ArrowDown') {
@@ -39,26 +37,29 @@ export default class TextArea extends Vue {
         else {
             return
         }
-        this.cursor_top = this.text_list.cur_line * this.line_height
-        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cur_line].firstChild
-        if (cur_row_pre != null) {
-            let tem_pos = cur_row_pre.childNodes[this.text_row_block_list[this.text_list.cur_line].cur_position]
+        // get cur row's pre tag
+        let cur_row_pre = (<Node[]>this.$refs.row)[this.text_list.cursor_position[0]].firstChild
+        if (cur_row_pre !== null) {
+            // get cur position's tt tag
+            // maybe undefined because the cursor could be at the end of the line
+            let tem_pos = cur_row_pre.childNodes[this.text_list.cursor_position[1]]
             if (tem_pos === undefined) {
-                tem_pos = cur_row_pre.childNodes[this.text_row_block_list[this.text_list.cur_line].cur_position - 1]
+                // if undifined, get the last tt tag at the row and plus 7.58
+                // which is the approximate width of a tt tag
+                tem_pos = cur_row_pre.childNodes[this.text_list.cursor_position[1] - 1]
                 this.cursor_left = (<HTMLElement>tem_pos).offsetLeft + 7.58
             }
             else {
                 this.cursor_left = (<HTMLElement>tem_pos).offsetLeft
             }
+            this.cursor_top = (<HTMLElement>tem_pos).offsetTop
         }
+        
     }
 
     mounted() {
-        let That = this
-        function change_cursor_opacity(): void {
-            That.cursor_opacity = That.cursor_opacity ^ 1
-        }
-        setInterval(change_cursor_opacity, 500)
+        setInterval(() => this.cursor_opacity = this.cursor_opacity ^ 1, 500)
+        // listen keyevent
         document.onkeydown = this.moveCursor
     }
 }
