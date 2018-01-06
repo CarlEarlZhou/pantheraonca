@@ -93,6 +93,7 @@ pre {
     background-color: #222;
     width: 100%;
     height: 100%;
+    cursor: text;
 }
 
 .text-row {
