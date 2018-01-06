@@ -122,6 +122,6 @@ pre {
 }
 
 .row-active {
-    background-color: rgba(255, 255, 255, 0.2)
+    background-color: rgba(255, 231, 175, 0.1)
 }
 </style>
