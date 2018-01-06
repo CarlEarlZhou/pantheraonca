@@ -23,7 +23,29 @@ export default class TextList {
         this._cur_position = 0
     }
 
-    public cursorDown(): void {
+    public handleKey(event: KeyboardEvent) {
+        if (event.key === 'ArrowDown') {
+            this.cursorDown()
+        }
+        else if (event.key === 'ArrowUp') {
+            this.cursorUp()
+        }
+        else if (event.key === 'ArrowLeft') {
+            this.cursorLeft()
+        }
+        else if (event.key === 'ArrowRight') {
+            this.cursorRight()
+        }
+        // Enter
+        else if (event.keyCode === 13) {
+            this.newLine()
+        }
+        else {
+            return
+        }
+    }
+
+    private cursorDown(): void {
         // if not the last line
         if (this._text_list_after.length > 1) {
             this._text_list_before.push(<string>this._text_list_after.shift())
@@ -34,7 +56,7 @@ export default class TextList {
         }
     }
 
-    public cursorUp(): void {
+    private cursorUp(): void {
         // if not the first line
         if (this._text_list_before.length > 0) {
             this._text_list_after.unshift(<string>this._text_list_before.pop())
@@ -45,7 +67,7 @@ export default class TextList {
         }
     }
 
-    public cursorLeft(): void {
+    private cursorLeft(): void {
         // if at the top of the line
         if (this._cur_position === 0) {
             // if not the first line
@@ -59,7 +81,7 @@ export default class TextList {
         }
     }
 
-    public cursorRight(): void {
+    private cursorRight(): void {
         // if at the end of the line
         if (this._cur_position === this._text_list_after[0].length) {
             // if not the last line
@@ -73,7 +95,7 @@ export default class TextList {
         }
     }
 
-    public newLine(): void {
+    private newLine(): void {
         // cut current line into two parts
         this._text_list_before.push(this._text_list_after[0].substring(0, this._cur_position))
         this._text_list_after[0] = this._text_list_after[0].substring(this._cur_position)

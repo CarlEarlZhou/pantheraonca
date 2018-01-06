@@ -30,25 +30,8 @@ export default class TextArea extends Vue {
             clearInterval(this.cursor_control)
             this.cursor_control = undefined
         }
-        if (event.key === 'ArrowDown') {
-            this.text_list.cursorDown()
-        }
-        else if (event.key === 'ArrowUp') {
-            this.text_list.cursorUp()
-        }
-        else if (event.key === 'ArrowLeft') {
-            this.text_list.cursorLeft()
-        }
-        else if (event.key === 'ArrowRight') {
-            this.text_list.cursorRight()
-        }
-        // Enter
-        else if (event.keyCode === 13) {
-            this.text_list.newLine()
-        }
-        else {
-            return
-        }
+        this.text_list.handleKey(event)
+        // wait for dom to be updated
         setTimeout(this.updateCursorPosition, 1)
     }
 
