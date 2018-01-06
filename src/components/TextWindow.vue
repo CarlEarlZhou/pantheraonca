@@ -1,6 +1,6 @@
 <template>
   <div class="text-window">
-      <text-area :raw_str="'\t  233  */+-iii33\nasdfaso'"></text-area>
+      <text-area :raw_str="'\t  233  */+-iii33\nasdfaso\nasdfnoasdnfaosdfn;asd   asdofnoa;\t asndofasdn'"></text-area>
   </div>
 </template>
 

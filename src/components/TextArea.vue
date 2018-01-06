@@ -3,7 +3,7 @@
     <div class="cursor" :style="{opacity: cursor_opacity, top: cursor_top + 'px', left: cursor_left + 'px'}"></div>
     <div class="text-row" :class="{'row-active': index == text_list.cursor_position[0]}" 
     v-for="(text_row, index) in text_list.text_rows" :key="index" ref="row">
-    <pre><tt v-for="(char, i) in text_row.row_str" :key="i">{{char}}</tt></pre>
+    <pre><tt v-for="(char, i) in text_row" :key="i">{{char}}</tt></pre>
     </div>
 </div>
 </template>

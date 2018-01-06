@@ -1,98 +1,75 @@
 import * as _ from 'lodash'
 
-class TextRow {
+export default class TextList {
+    private _tab_len: number
+    private _text_list: string[]
+    private _text_list_before: string[]
+    private _text_list_after: string[]
+    private _cur_line: number
     private _cur_position: number
 
-    constructor(private _row_str: string, tab_len: number) {
+    constructor(raw_str: string, tab_len=4) {
+        // split input str by \n
         // convert a tab to some spaces
         let convert_space = ''
         for (let i = 0; i < tab_len; i++) {
             convert_space = convert_space + ' '            
         }
-        this._row_str = _row_str.replace(/\t/g, convert_space)
+        this._text_list_after = raw_str.split('\n').map(row_str => row_str.replace(/\t/g, convert_space))
+        this._text_list_before = new Array<string>()       
+        this._tab_len = tab_len
         // init cursor position
+        // cur_line can be standed by _text_list_before.length
         this._cur_position = 0
     }
 
-    public get len(): number {
-        return this._row_str.length
-    }
-
-    public get cur_position(): number {
-        return this._cur_position
-    }
-
-    /**
-     * cur_position should only be set by TextList
-     */
-    public set cur_position(pos: number) {
-        if (pos >= this._row_str.length || pos < 0) {
-            // could be _row_str.length because the cursor may be at the end of the line
-            this._cur_position = this._row_str.length
-        }
-        else {
-            this._cur_position = pos
-        }
-    }
-
-    public get row_str(): string {
-        return this._row_str
-    }
-}
-
-
-export default class TextList {
-    private _tab_len: number
-    private _text_list: TextRow[]
-    private _cur_line: number
-
-    constructor(raw_str: string, tab_len=4) {
-        // split input str by \n
-        this._text_list = raw_str.split('\n').map(row_str => new TextRow(row_str, tab_len))
-        this._tab_len = tab_len
-        // init cursor position
-        this._cur_line = 0
-    }
-
     public cursorDown(): void {
-        if (this._cur_line < this._text_list.length - 1) {
-            this._cur_line = this._cur_line + 1
-            this._text_list[this._cur_line].cur_position = this._text_list[this._cur_line - 1].cur_position
+        // if not the last line
+        if (this._text_list_after.length > 1) {
+            this._text_list_before.push(<string>this._text_list_after.shift())
+            // adjust cur position
+            if (this._cur_position > this._text_list_after[0].length) {
+                this._cur_position = this._text_list_after[0].length
+            }
         }
     }
 
     public cursorUp(): void {
-        if (this._cur_line > 0) {
-            this._cur_line = this._cur_line - 1
-            this._text_list[this._cur_line].cur_position = this._text_list[this._cur_line + 1].cur_position
+        // if not the first line
+        if (this._text_list_before.length > 0) {
+            this._text_list_after.unshift(<string>this._text_list_before.pop())
+            // adjust cur position
+            if (this._cur_position > this._text_list_after[0].length) {
+                this._cur_position = this._text_list_after[0].length
+            }
         }
     }
 
     public cursorLeft(): void {
         // if at the top of the line
-        if (this._text_list[this._cur_line].cur_position === 0) {
+        if (this._cur_position === 0) {
             // if not the first line
-            if (this._cur_line !== 0) {
+            if (this._text_list_before.length > 0) {
                 this.cursorUp()
-                this._text_list[this._cur_line].cur_position = -1
+                this._cur_position = this._text_list_after[0].length
             }
         }
         else {
-            this._text_list[this._cur_line].cur_position = this._text_list[this._cur_line].cur_position - 1
+            this._cur_position = this._cur_position - 1
         }
     }
 
     public cursorRight(): void {
         // if at the end of the line
-        if (this._text_list[this._cur_line].cur_position === this._text_list[this._cur_line].len) {
+        if (this._cur_position === this._text_list_after[0].length) {
             // if not the last line
-            if (this._cur_line !== this._text_list.length - 1) {
+            if (this._text_list_after.length > 1) {
                 this.cursorDown()
-                this._text_list[this._cur_line].cur_position = 0
+                this._cur_position = 0
             }
         }
         else {
-            this._text_list[this._cur_line].cur_position = this._text_list[this._cur_line].cur_position + 1
+            this._cur_position = this._cur_position + 1
         }
     }
     
@@ -100,17 +77,12 @@ export default class TextList {
      * [y, x]
      */
     public get cursor_position(): [number, number] {
-        let pos_x = this._cur_line
-        let pos_y = this._text_list[this._cur_line].cur_position
-        return [pos_x, pos_y]
+        let pos_y = this._text_list_before.length
+        let pos_x = this._cur_position
+        return [pos_y, pos_x]
     }
 
-    public get text_rows(): TextRow[] {
-        return this._text_list
+    public get text_rows(): string[] {
+        return [...this._text_list_before, ...this._text_list_after]
     }
-
-    public row_str(index: number): string {
-        return this._text_list[index].row_str
-    }
-    
 }
