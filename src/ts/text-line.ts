@@ -62,6 +62,32 @@ export default class TextList {
             }
             this.insert(char)
         }
+        // [; = , - . / `]
+        else if (event.keyCode >= 186 && event.keyCode <= 192) {
+            let shift_map = [58, 43, 60, 95, 62, 63, 126]
+            let map = [59, 61, 44, 45, 46, 47, 96]
+            let char: string
+            if (event.shiftKey) {
+                char = String.fromCharCode(shift_map[event.keyCode - 186])
+            }
+            else {
+                char = String.fromCharCode(map[event.keyCode - 186])
+            }
+            this.insert(char)
+        }
+        // [[ \ ] ']
+        else if (event.keyCode >= 219 && event.keyCode <= 222) {
+            let shift_map = [123, 124, 125, 34]
+            let map = [91, 92, 93, 39]
+            let char: string
+            if (event.shiftKey) {
+                char = String.fromCharCode(shift_map[event.keyCode - 219])
+            }
+            else {
+                char = String.fromCharCode(map[event.keyCode - 219])
+            }
+            this.insert(char)
+        }
         else if (event.keyCode === 8) {
             this.backspace()
         }
